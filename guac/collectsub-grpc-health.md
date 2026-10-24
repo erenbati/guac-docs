@@ -7,49 +7,51 @@ parent: How GUAC components work together
 
 # CollectSub gRPC health checks and reflection
 
-The `guaccsub` server exposes the standard gRPC health checking service and
-enables gRPC server reflection on the same port as its CollectSub API. The
-default listening port is `2782`, configured using `--csub-listen-port`.
+The `guaccsub` server exposes gRPC health checks and server reflection.
 
-## Check health with grpcurl
+Both services use the CollectSub API port, `2782` by default.
+Use `--csub-listen-port` to change that port.
 
-For a local server without TLS, query the overall health status:
+## Health checks with grpcurl
+
+For a server without TLS, check the overall health status:
 
 ```bash
 grpcurl -plaintext -d '{"service":""}' localhost:2782 grpc.health.v1.Health/Check
 ```
 
-A running server reports `"status": "SERVING"`. CollectSub also reports
-`SERVING` for the named service
-`guacsec.guac.collect_subscriber.schema.CollectSubscriberService`:
+A running CollectSub server reports `"status": "SERVING"`.
+
+The server also reports `SERVING` for its named service:
 
 ```bash
 grpcurl -plaintext -d '{"service":"guacsec.guac.collect_subscriber.schema.CollectSubscriberService"}' localhost:2782 grpc.health.v1.Health/Check
 ```
 
-The health service is registered when the gRPC server starts. Its serving status
-does not establish that downstream collectors, ingestion, or graph services are
-healthy.
+The registered service name is
+`guacsec.guac.collect_subscriber.schema.CollectSubscriberService`.
 
-## Inspect the API with server reflection
+These health checks do not validate downstream GUAC services.
 
-Reflection lets tools such as `grpcurl` list and describe services without a
-local protocol buffer descriptor:
+## gRPC server reflection
+
+Reflection lets tools inspect services without local proto files:
 
 ```bash
 grpcurl -plaintext localhost:2782 list
 grpcurl -plaintext localhost:2782 describe guacsec.guac.collect_subscriber.schema.CollectSubscriberService
 ```
 
-The `-plaintext` flag is appropriate only when connecting without TLS. If
-`guaccsub` is configured with `--csub-tls-cert-file` and
-`--csub-tls-key-file`, connect using TLS and configure certificate trust as
-needed instead of passing `-plaintext`.
+Use `-plaintext` only with an unencrypted gRPC endpoint.
+
+If the server uses TLS, configure certificate trust instead.
+The server TLS options are `--csub-tls-cert-file` and
+`--csub-tls-key-file`.
 
 ## Kubernetes readiness probe
 
-Kubernetes supports gRPC readiness probes. For a CollectSub container listening
-on its default port without TLS, add the following to the container spec:
+Kubernetes supports gRPC readiness checks.
+For a plaintext server on the default port, use:
 
 ```yaml
 readinessProbe:
@@ -60,13 +62,12 @@ readinessProbe:
   periodSeconds: 10
 ```
 
-Kubernetes gRPC probes require a numeric port and connect over plaintext by
-default. TLS support depends on the Kubernetes version and feature gates. If
-CollectSub requires TLS, verify the cluster's gRPC probe TLS capabilities or
-use another suitable probe mechanism.
+The probe requires a numeric port and uses plaintext by default.
 
-A successful check confirms the configured gRPC health status; it is not an
-end-to-end check of the GUAC pipeline.
+TLS probes require a compatible Kubernetes version and configuration.
+For Kubernetes v1.37, TLS mode is an alpha feature disabled by default.
 
-For the server implementation, see
-[CollectSub's gRPC server](https://github.com/guacsec/guac/blob/main/pkg/collectsub/server/server.go).
+A successful probe reports only the configured gRPC health status.
+It is not an end-to-end test of the entire GUAC pipeline.
+
+See the [CollectSub server implementation](https://github.com/guacsec/guac/blob/main/pkg/collectsub/server/server.go).
