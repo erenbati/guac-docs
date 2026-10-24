@@ -59,6 +59,8 @@ AWS credentials and the correct AWS region must be available.
 
 The SQS provider resolves the queue name to its queue URL.
 
+The current SQS handler recognizes `ObjectCreated:Put` events.
+
 ## Using guaccollect
 
 The `guaccollect s3` command uses `--service-poll` for this mode.
