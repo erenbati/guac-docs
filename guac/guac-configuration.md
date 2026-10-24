@@ -241,6 +241,32 @@ GUAC_DB_ADDRESS="postgres://guac:guac@localhost:5432/guac?sslmode=disable" guacg
   - **Description**: The port on which the API server listens.
   - **When to Change**: Change if your API server uses a different port.
 
+
+### Server-side TLS
+
+The CollectSub gRPC server, GraphQL server, and REST API server each support
+TLS with a PEM-encoded certificate and private key:
+
+- **CollectSub (`guaccsub`)**: `--csub-tls-cert-file` and `--csub-tls-key-file`.
+- **GraphQL (`guacgql`)**: `--gql-tls-cert-file` and `--gql-tls-key-file`.
+- **REST (`guacrest`)**: `--rest-api-tls-cert-file` and
+  `--rest-api-tls-key-file`.
+
+All six flags default to an empty string. The server enables TLS only when
+**both** certificate and key file paths are configured; otherwise it uses a
+plaintext listener. For example:
+
+```bash
+guaccsub --csub-tls-cert-file /etc/guac/tls.crt \
+  --csub-tls-key-file /etc/guac/tls.key
+```
+
+GraphQL and REST switch from HTTP to HTTPS when their respective TLS flags
+are configured. For clients connecting to a TLS-enabled CollectSub server,
+enable the client-side `--csub-tls` flag and ensure the certificate is trusted.
+Avoid `--csub-tls-skip-verify` in production.
+
+
 ## Collector Configuration
 
 - **service-poll**: `true`
