@@ -9,28 +9,29 @@ parent: How GUAC works
 
 GUAC supports server-side TLS for CollectSub, GraphQL, and REST.
 
-Each server accepts a PEM-encoded certificate and private key.
+Each server requires a PEM-encoded certificate and private key.
 
-## Server TLS options
+## TLS flags
 
-- **CollectSub (`guaccsub`)**: `--csub-tls-cert-file` and
-  `--csub-tls-key-file`.
-- **GraphQL (`guacgql`)**: `--gql-tls-cert-file` and
-  `--gql-tls-key-file`.
-- **REST (`guacrest`)**: `--rest-api-tls-cert-file` and
-  `--rest-api-tls-key-file`.
+- **CollectSub:** `--csub-tls-cert-file` and `--csub-tls-key-file`.
+- **GraphQL:** `--gql-tls-cert-file` and `--gql-tls-key-file`.
+- **REST:** `--rest-api-tls-cert-file` and `--rest-api-tls-key-file`.
 
-Default ports are `2782` for CollectSub, `8080` for GraphQL,
-and `8081` for REST.
+The default port for CollectSub is `2782`.
+
+The default port for GraphQL is `8080`.
+
+The default port for REST is `8081`.
 
 All six certificate and key options default to empty strings.
 
-A server enables TLS only when **both** file paths are configured.
-Otherwise, it starts without TLS.
+A server enables TLS only when both file paths are provided.
 
-Protect private-key files with appropriate filesystem permissions.
+If one path is missing, the server starts without TLS.
 
-## Example: enable CollectSub TLS
+Protect private-key files with suitable filesystem permissions.
+
+## Enable TLS for CollectSub
 
 ```bash
 guaccsub \
@@ -38,22 +39,16 @@ guaccsub \
   --csub-tls-key-file /etc/guac/tls.key
 ```
 
-Use the equivalent `gql-*` options to enable HTTPS for GraphQL.
+Use the equivalent `gql-*` flags to enable HTTPS for GraphQL.
 
-Use the `rest-api-*` options to enable HTTPS for REST.
+Use the `rest-api-*` flags to enable HTTPS for REST.
 
-## CollectSub client TLS
+## Connect a CollectSub client
 
-Use the client option `--csub-tls` when the server requires TLS.
+Enable `--csub-tls` when the server requires TLS.
 
 Ensure the client trusts the server certificate.
 
-The option `--csub-tls-skip-verify` disables certificate verification.
-Avoid using it in production.
+The option `--csub-tls-skip-verify` disables verification.
 
-## Source references
-
-- [CollectSub server](https://github.com/guacsec/guac/blob/main/pkg/collectsub/server/server.go)
-- [GraphQL server](https://github.com/guacsec/guac/blob/main/cmd/guacgql/cmd/server.go)
-- [REST server](https://github.com/guacsec/guac/blob/main/cmd/guacrest/cmd/server.go)
-- [CLI option defaults](https://github.com/guacsec/guac/blob/main/pkg/cli/store.go)
+Do not use it for production connections.
