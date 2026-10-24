@@ -11,11 +11,12 @@ The GUAC CollectSub, GraphQL, and REST servers support TLS with a PEM-encoded
 server certificate and private key. Each server enables TLS only when **both**
 of its certificate and key options are set.
 
-| Server | Certificate flag | Private-key flag | Default port |
-| --- | --- | --- | --- |
-| CollectSub (`guaccsub`) | `--csub-tls-cert-file` | `--csub-tls-key-file` | `2782` |
-| GraphQL (`guacgql`) | `--gql-tls-cert-file` | `--gql-tls-key-file` | `8080` |
-| REST (`guacrest`) | `--rest-api-tls-cert-file` | `--rest-api-tls-key-file` | `8081` |
+- **CollectSub (`guaccsub`)**: `--csub-tls-cert-file` and
+  `--csub-tls-key-file` (default port `2782`).
+- **GraphQL (`guacgql`)**: `--gql-tls-cert-file` and `--gql-tls-key-file`
+  (default port `8080`).
+- **REST (`guacrest`)**: `--rest-api-tls-cert-file` and
+  `--rest-api-tls-key-file` (default port `8081`).
 
 The certificate and key flags default to empty strings. When either path is
 missing, the corresponding server starts without TLS. Set both flags together,
