@@ -142,3 +142,36 @@ more information about the pURL (or other identifier/datasource) if they know
 how to handle it. For example, the deps.dev collector knows how to handle pURLs
 and retrieves more information about the pURL entries created from the ingestor
 parsing the SBOM.
+
+##### gRPC health checks and reflection
+
+`guaccsub` provides the standard gRPC health-check service and gRPC reflection
+on the same port as its CollectSub API (`2782` by default). This enables
+Kubernetes readiness checks and lets operators inspect the API with
+[`grpcurl`](https://github.com/fullstorydev/grpcurl) without local proto files.
+
+For a server using the default plaintext connection:
+
+```bash
+# Discover services through reflection
+grpcurl -plaintext localhost:2782 list
+
+# Check the overall health status
+grpcurl -plaintext -d '{"service":""}' localhost:2782 grpc.health.v1.Health/Check
+```
+
+The health service reports `SERVING` for the overall server (empty service
+name) and for
+`guacsec.guac.collect_subscriber.schema.CollectSubscriberService`.
+
+Kubernetes can use its built-in gRPC readiness probe:
+
+```yaml
+readinessProbe:
+  grpc:
+    port: 2782
+```
+
+If you change `csub-listen-port`, use that port in the commands and probe.
+The built-in Kubernetes gRPC probe does not support TLS; use a compatible
+external health checker if the CollectSub server is configured for TLS.
