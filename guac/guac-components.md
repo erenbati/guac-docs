@@ -173,5 +173,6 @@ readinessProbe:
 ```
 
 If you change `csub-listen-port`, use that port in the commands and probe.
-The built-in Kubernetes gRPC probe does not support TLS; use a compatible
-external health checker if the CollectSub server is configured for TLS.
+The built-in Kubernetes gRPC probe uses plaintext by default. TLS mode is
+alpha in Kubernetes v1.37 and requires the `GRPCContainerProbeTLS` feature
+gate; otherwise use a separate TLS-capable health checker.
