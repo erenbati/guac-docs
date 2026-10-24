@@ -60,9 +60,10 @@ readinessProbe:
   periodSeconds: 10
 ```
 
-The built-in Kubernetes gRPC probe requires a numeric port and does not support
-TLS authentication. Use a different probe mechanism if your CollectSub gRPC
-endpoint requires TLS. A successful check confirms the configured gRPC health
+Kubernetes gRPC probes require a numeric port and connect over plaintext by
+default. TLS support depends on the Kubernetes version and feature gates. If
+CollectSub requires TLS, verify the cluster's gRPC probe TLS capabilities or
+use another suitable probe mechanism. A successful check confirms the configured gRPC health
 status; it is not an end-to-end check of the GUAC pipeline.
 
 For the server implementation, see
