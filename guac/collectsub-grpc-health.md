@@ -50,8 +50,7 @@ Use `-plaintext` only when TLS is disabled.
 
 For TLS connections, configure the client to trust the server.
 
-The server TLS flags are `--csub-tls-cert-file` and
-`--csub-tls-key-file`.
+The server TLS flags are `--csub-tls-cert-file` and `--csub-tls-key-file`.
 
 ## Kubernetes readiness probe
 
